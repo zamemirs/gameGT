@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  backend:
+    build: ./game-backend
+    container_name: game-backend
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build: ./game-frontend
+    container_name: game-frontend
+    ports:
+      - "3000:80"
+    environment:
+      # Frontend will call http://backend:5000 from the browser? No—browser can’t resolve container DNS.
+      # Use compose host port in local dev:
+      REACT_APP_API_URL: "http://localhost:5000"
+    depends_on:
+      - game-backend

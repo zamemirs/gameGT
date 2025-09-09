@@ -1,0 +1,6 @@
+resources:
+  - deployment.yaml
+
+images:
+  - name: 590183739327.dkr.ecr.ap-south-1.amazonaws.com/game-backend
+    newTag: latest  # CI will overwrite this to the git SHA

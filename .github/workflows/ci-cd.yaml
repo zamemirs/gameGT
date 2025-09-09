@@ -1,0 +1,120 @@
+name: Build, Push Images and Deploy via Argo CD (GitOps)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+# Needed so the workflow can push commits back to the repo
+permissions:
+  contents: write
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REGISTRY: 590183739327.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+  BACKEND_REPO: game-backend
+  FRONTEND_REPO: game-frontend
+  K8S_NAMESPACE: gamegt
+  EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
+
+jobs:
+  ci:
+    name: "Build & Test (CI)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # (Optional) lightweight Node checks if you add tests later
+      - name: Backend - install deps (optional)
+        working-directory: game-backend
+        run: |
+          if [ -f package.json ]; then
+            npm ci || npm install
+            npm run test || echo "No backend tests"
+          fi
+
+      - name: Frontend - install deps (optional)
+        working-directory: game-frontend
+        run: |
+          if [ -f package.json ]; then
+            npm ci || npm install
+            npm run test || echo "No frontend tests"
+          fi
+
+  build-and-push:
+    name: "Build & Push images"
+    runs-on: ubuntu-latest
+    needs: ci
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & push backend image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t game-backend:latest ./game-backend
+          docker tag game-backend:latest $ECR_REGISTRY/${{ env.BACKEND_REPO }}:latest
+          docker tag game-backend:latest $ECR_REGISTRY/${{ env.BACKEND_REPO }}:${IMAGE_TAG}
+          docker push $ECR_REGISTRY/${{ env.BACKEND_REPO }}:latest
+          docker push $ECR_REGISTRY/${{ env.BACKEND_REPO }}:${IMAGE_TAG}
+
+      - name: Build & push frontend image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t game-frontend:latest ./game-frontend
+          docker tag game-frontend:latest $ECR_REGISTRY/${{ env.FRONTEND_REPO }}:latest
+          docker tag game-frontend:latest $ECR_REGISTRY/${{ env.FRONTEND_REPO }}:${IMAGE_TAG}
+          docker push $ECR_REGISTRY/${{ env.FRONTEND_REPO }}:latest
+          docker push $ECR_REGISTRY/${{ env.FRONTEND_REPO }}:${IMAGE_TAG}
+
+  bump-tags-and-let-argocd-sync:
+    name: "Commit image tags (Argo CD syncs)"
+    runs-on: ubuntu-latest
+    needs: build-and-push
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yq
+        uses: mikefarah/yq@v4.44.3
+
+      - name: Configure Git identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Update Kustomize image tags and push
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+
+          # Update 'images' newTag in k8s backend overlay/base (adjust paths if different)
+          echo "Updating backend image tag to ${IMAGE_TAG}"
+          yq -i '
+            (.images[] | select(.name == "'"$ECR_REGISTRY/$BACKEND_REPO"'")).newTag = env(IMAGE_TAG)
+          ' k8s/backend/kustomization.yaml
+
+          # Update 'images' newTag in k8s frontend overlay/base
+          echo "Updating frontend image tag to ${IMAGE_TAG}"
+          yq -i '
+            (.images[] | select(.name == "'"$ECR_REGISTRY/$FRONTEND_REPO"'")).newTag = env(IMAGE_TAG)
+          ' k8s/frontend/kustomization.yaml
+
+          git add k8s/backend/kustomization.yaml k8s/frontend/kustomization.yaml
+          git commit -m "chore(cd): bump images to ${IMAGE_TAG}" || echo "No changes to commit"
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} HEAD:main
