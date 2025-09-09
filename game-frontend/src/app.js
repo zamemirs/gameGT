@@ -64,7 +64,6 @@ export default function App() {
     }
   };
 
-  // Simple styling
   const boxStyle = {
     height: 220,
     borderRadius: 16,
