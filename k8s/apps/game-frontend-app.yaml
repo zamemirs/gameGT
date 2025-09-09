@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/zamemirs/hike_micro_api.git
     targetRevision: main
-    path: k8s/frontend
+    path: k8s/game-frontend
   destination:
     server: https://kubernetes.default.svc
     namespace: hike
