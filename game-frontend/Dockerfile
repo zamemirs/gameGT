@@ -1,11 +1,10 @@
 # Build
-FROM node:18-alpine
+FROM node:18-alpine as build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --only=production
+RUN npm ci
 COPY . .
-EXPOSE 5000
-CMD ["npm", "start"]
+RUN npm run build
 
 # Serve
 FROM nginx:alpine
