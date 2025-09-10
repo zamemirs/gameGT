@@ -1,6 +1,6 @@
 # Stage 1: Build React app
 FROM node:18-alpine AS build
-WORKDIR /App
+WORKDIR /app
 
 # Copy package files and install dependencies
 COPY package*.json ./
@@ -12,7 +12,7 @@ RUN npm run build
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
-COPY --from=build /App/build /usr/share/nginx/html
+COPY --from=build /app/build /usr/share/nginx/html
 
 # Expose container port
 EXPOSE 80
