@@ -1,11 +1,19 @@
-FROM node:18-alpine as build
-WORKDIR /app
+# Stage 1: Build React app
+FROM node:18-alpine AS build
+WORKDIR /App
+
+# Copy package files and install dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
+
+# Copy the source and build
 COPY . .
 RUN npm run build
 
+# Stage 2: Serve with Nginx
 FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /App/build /usr/share/nginx/html
+
+# Expose container port
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
