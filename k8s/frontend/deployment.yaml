@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: game-frontend
-        image: 590183739327.dkr.ecr.ap-south-1a.amazonaws.com/game-frontend:latest
+        image: 590183739327.dkr.ecr.ap-south-1.amazonaws.com/game-frontend:latest
         ports:
         - containerPort: 80
 ---
