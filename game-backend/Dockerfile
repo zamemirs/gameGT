@@ -1,9 +1,11 @@
 FROM node:18-alpine
-WORKDIR /app/game-backend
+WORKDIR /app
 
-COPY game-backend/package*.json ./
+# Copy package.json and lock file (inside game-backend already)
+COPY package*.json ./
 RUN npm install
 
+# Copy rest of backend source
 COPY . .
 
 EXPOSE 5000
