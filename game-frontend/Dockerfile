@@ -10,6 +10,8 @@ RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build
 
+RUN npm ls ajv ajv-keywords
+
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
