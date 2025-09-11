@@ -1,7 +1,12 @@
-FROM public.ecr.aws/docker/library/node:18-alpine
+FROM node:18-alpine
 WORKDIR /app
+
+# Copy package files first (cache layer)
 COPY package*.json ./
-RUN npm install --only=production
+RUN npm install --production
+
+# Copy backend source code
 COPY . .
-EXPOSE 5000
-CMD ["npm", "start"]
+
+# Start the server
+CMD ["node", "game-backend/app.js"]
