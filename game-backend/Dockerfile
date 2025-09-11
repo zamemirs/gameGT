@@ -4,7 +4,7 @@ WORKDIR /app/game-backend
 COPY game-backend/package*.json ./
 RUN npm install
 
-COPY game-backend/. .
+COPY . .
 
 EXPOSE 5000
 CMD ["node", "app.js"]
