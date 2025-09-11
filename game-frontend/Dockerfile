@@ -2,15 +2,11 @@
 FROM node:18-alpine AS build
 WORKDIR /app
 
-# Copy package files and install deps (fix peer deps issue)
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
-# Copy the source and build
 COPY . .
 RUN npm run build
-
-RUN npm ls ajv ajv-keywords
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
