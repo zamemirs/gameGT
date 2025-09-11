@@ -1,12 +1,13 @@
+# Backend Dockerfile
 FROM node:18-alpine
 WORKDIR /app
 
-# Copy package files first (cache layer)
-COPY package*.json ./
+# Copy package files and install deps
+COPY game-backend/package*.json ./
 RUN npm install --production
 
-# Copy backend source code
-COPY . .
+# Copy the backend source
+COPY game-backend/ .
 
 # Start the server
-CMD ["node", "game-backend/app.js"]
+CMD ["node", "app.js"]
