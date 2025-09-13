@@ -1,12 +1,12 @@
+# game-backend/Dockerfile
 FROM node:18-alpine
 WORKDIR /app
 
-# Copy package.json and lock file (inside game-backend already)
-COPY package*.json ./
+# Copy only backend code
+COPY game-backend/package*.json ./
 RUN npm install
 
-# Copy rest of backend source
-COPY . .
+COPY game-backend/. ./
 
 EXPOSE 5000
 CMD ["node", "app.js"]
