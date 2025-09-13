@@ -1,12 +1,11 @@
-# game-backend/Dockerfile
 FROM node:18-alpine
 WORKDIR /app
 
-# Copy only package files
+# Copy only package.json
 COPY package*.json ./
 RUN npm install
 
-# Copy everything else
+# Copy backend code
 COPY . .
 
 EXPOSE 5000
