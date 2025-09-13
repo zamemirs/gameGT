@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: game-backend
-        image: 590183739327.dkr.ecr.ap-south-1.amazonaws.com/game-backend:14
+        image: 590183739327.dkr.ecr.ap-south-1.amazonaws.com/game-backend:15
         ports:
         - containerPort: 5000
 ---
