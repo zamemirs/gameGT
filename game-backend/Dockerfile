@@ -5,6 +5,7 @@ WORKDIR /app
 # Copy only backend code
 COPY game-backend/package*.json ./
 RUN npm install
+RUN npm install
 
 COPY game-backend/. ./
 
