@@ -2,12 +2,12 @@
 FROM node:18-alpine
 WORKDIR /app
 
-# Copy only backend code
-COPY game-backend/package*.json ./
-RUN npm install
+# Copy only package files
+COPY package*.json ./
 RUN npm install
 
-COPY game-backend/. ./
+# Copy everything else
+COPY . .
 
 EXPOSE 5000
 CMD ["node", "app.js"]
