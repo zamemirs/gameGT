@@ -77,7 +77,7 @@ export default function App() {
     fontSize: 22,
     transition: "background 0.2s",
     background:
-      phase === "go" ? "#13a749ff" : phase === "waiting" ? "#f59e0b" : "#3b82f6",
+      phase === "go" ? "#596624ff" : phase === "waiting" ? "#f59e0b" : "#3b82f6",
     color: "white",
     boxShadow: "0 10px 20px rgba(0,0,0,0.12)"
   };
