@@ -2,4 +2,4 @@ resources:
   - deployment.yaml
 images:
   - name: 590183739327.dkr.ecr.ap-south-1.amazonaws.com/game-frontend
-    newTag: b635b41e4c61633b462a5c6314d614c02cc00380 # CI will overwrite this to the git SHA
+    newTag: f0fad663a5e49dee4ad5b6c1dbea1e3396584730 # CI will overwrite this to the git SHA
