@@ -131,7 +131,7 @@ export default function App() {
                 value={reaction ?? ""}
                 readOnly
                 placeholder="Play once to get a score"
-                style={{ width: "100%", padding: 10, borderRadius: 8, border: "1px solid #ddd", background: "#f9fafb" }}
+                style={{ width: "100%", padding: 10, borderRadius: 8, border: "1px solid #ddd", background: "#81b6f0ff" }}
               />
             </div>
             <button
@@ -152,7 +152,7 @@ export default function App() {
         </div>
       </div>
 
-      <p style={{ marginTop: 24, color: "#777", fontSize: 12 }}>
+      <p style={{ marginTop: 24, color: "#fa0606ff", fontSize: 10 }}>
         * Leaderboard is in-memory for demo purposes (resets on backend restart).
       </p>
     </div>
