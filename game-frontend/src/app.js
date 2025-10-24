@@ -152,7 +152,7 @@ export default function App() {
         </div>
       </div>
 
-      <p style={{ marginTop: 24, color: "#fa0606ff", fontSize: 10 }}>
+      <p style={{ marginTop: 24, color: "#fa0606ff", fontSize: 12 }}>
         * Leaderboard is in-memory for demo purposes (resets on backend restart).
       </p>
     </div>
